@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <string.h>
-
+#include "bipartiteGraph.h"
 /* #include "bipartiteGraph.h"
  #include "commonDefs.h"
 */
@@ -14,11 +14,13 @@ int main(int argc, char *argv[])
     fp = fopen(fName,"r");
     int males,females;
 
+    /* Arg error handling */
     if(argc != 2)
     {
         printf("Error! Incorrect number of inputs. \n");
         return 1;    	
     }
+    /* File error handling */
     if(!fp)
     {
         printf("Error! Can't open file. \n");
@@ -29,7 +31,7 @@ int main(int argc, char *argv[])
 	const char delim[2] = " ";
 	char *token;
 
-	/* used to do get # males and females from  the
+	/* Count used to get # males and females from  the
 	   first line of file 
 	 */
 	char count = 0;
