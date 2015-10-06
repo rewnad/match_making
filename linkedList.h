@@ -17,10 +17,10 @@ struct bigNode_t;
 struct bigList_t;
 struct linkedListNode_t
 {
-	int lucky_person;
+	int candidate;
+	int priority;
 	struct linkedListNode_t *pNext;
 };
-
 typedef struct linkedListNode_t llNode_t;
 
 /*
@@ -30,7 +30,7 @@ typedef struct
 {
 	/* pointer to head of list. */
 	llNode_t *pHead;
-	/* count of number of elements in list */
+	/* count of number of candidates in list */
 	int size;
 } linkedList_t;
 
@@ -38,18 +38,19 @@ typedef struct bigList_t bigNode_t;
 
 struct bigNode_t 
 {
+	int candidate;
 	/* pointer to head of list. */
 	struct bigNode_t *pNext;
 	linkedList_t *preferences;
-	/* count of number of elements in list */
-	int current_pref;
+	/* user status */
+	enum {TAKEN,FREE} status;
 }; 
 
 typedef struct
 {
 	/* pointer to head of list. */
 	struct bigNode_t *pHead;
-	/* count of number of elements in list */
+	/* count of number of candidates in list */
 	int size;
 } bigList_t;
 
@@ -78,41 +79,41 @@ void destroyList(linkedList_t *pList);
 
 
 /*
- * Creates a node with value 'element' and adds the newly created node to 'pList', which points to the head of the list.
+ * Creates a node with value 'candidate and adds the newly created node to 'pList', which points to the head of the list.
  * pList - point to head of list.
- * element - the element you want to insert into the list.
+ * candidate- the candidateyou want to insert into the list.
  */
 extern
-void addNode(linkedList_t *pList, int element);
+void addNode(linkedList_t *pList, int candidate);
 
 extern
-void addBigNode(bigList_t *pList, int element);
+void addBigNode(bigList_t *pList, int candidate);
 /*
- * Deletes a node containing element from list 'pList'.
+ * Deletes a node containing candidatefrom list 'pList'.
  * pList - point to head of list.
- * element - the element you want to remove from the list.
+ * candidate- the candidateyou want to remove from the list.
  * status - the status of the deletion operation.
  *
  * returns - pointer to the (new) head of the list.
  */
 extern
-int deleteNode(linkedList_t *pList, int element);
+int deleteNode(linkedList_t *pList, int candidate);
 extern
-int deleteBigNode(bigList_t *pList, int element);
+int deleteBigNode(bigList_t *pList, int candidate);
 
 
 /*
- * Searches if element is in the list 'pList'.
+ * Searches if candidateis in the list 'pList'.
  * pList - point to head of list.
- * element - the element you want to search for in the list.
+ * candidate- the candidateyou want to search for in the list.
  */
 extern
-int findElement(linkedList_t *pList, int element);
+int findcandidate(linkedList_t *pList, int candidate);
 extern
-int findBigElement(bigList_t *pList, int element);
+int findBigcandidate(bigList_t *pList, int candidate);
 
 /*
- * Print the elements in the list to stdout.
+ * Print the candidates in the list to stdout.
  * pList - point to head of list.
  */
 extern

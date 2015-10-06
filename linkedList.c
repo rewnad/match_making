@@ -18,6 +18,7 @@ linkedList_t* createList()
 	pNewList->size = 0;
 	pNewList->pHead = NULL;
 
+
 	return pNewList;
 } /* end of createList() */
 
@@ -48,35 +49,37 @@ void destroyList(linkedList_t *pList)
 } /* end of destroyList() */
 
 
-void addNode(linkedList_t *pList, int element)
+void addNode(linkedList_t *pList, int candidate)
 {
 	llNode_t *pNewNode = (llNode_t*) safeMalloc(sizeof(llNode_t));
-	pNewNode->element = element;
+	pNewNode->candidate = candidate;
+	pNewNode->priority = pList->size;
 	/* if null, then first node.  If not null, then pNewNode becomes new head. */
 	pNewNode->pNext = pList->pHead;
 	pList->pHead = pNewNode;
 	pList->size += 1;
 } /** end of addNode() */
 
-void addBigNode(bigList_t *pList, int element)
+void addBigNode(bigList_t *pList, int candidate)
 {
 	struct bigNode_t *pNewNode = (struct bigNode_t*) safeMalloc(sizeof(struct bigNode_t));
-	pNewNode->element = element;
+	pNewNode->candidate= candidate;
+	pNewNode->status = FREE;
 	/* if null, then first node.  If not null, then pNewNode becomes new head. */
-	pNewNode->edges = createList();
+	pNewNode->preferences = createList();
 	pNewNode->pNext = pList->pHead;
 	pList->pHead = pNewNode;
 	pList->size += 1;
 }
 
 
-int deleteNode(linkedList_t *pList, int element)
+int deleteNode(linkedList_t *pList, int candidate)
 {
 	llNode_t *pCurrNode = pList->pHead, *pPrevNode = NULL;
 
 	if (pCurrNode != NULL) {
 		/** If head is the deleted node. */
-		if (pCurrNode->element == element) {
+		if (pCurrNode->candidate== candidate) {
 			pList->pHead = pCurrNode->pNext;
 			safeFree(pCurrNode, sizeof(llNode_t));
 			pList->size -= 1;
@@ -88,7 +91,7 @@ int deleteNode(linkedList_t *pList, int element)
 	}
 
 	while (pCurrNode != NULL) {
-		if (pCurrNode->element == element) {
+		if (pCurrNode->candidate== candidate) {
 			pPrevNode->pNext = pCurrNode->pNext;
 			safeFree(pCurrNode, sizeof(llNode_t));
 			return SUCCESS;
@@ -97,17 +100,17 @@ int deleteNode(linkedList_t *pList, int element)
 		pCurrNode = pCurrNode->pNext;
 	}
 
-	/* Can't find element. */
+	/* Can't find candidate. */
 	return FAILED;
 } /* end of deleteNode() */
 
-int deleteBigNode(bigList_t *pList, int element)
+int deleteBigNode(bigList_t *pList, int candidate)
 {
 	struct bigNode_t *pCurrNode = pList->pHead, *pPrevNode = NULL;
 
 	if (pCurrNode != NULL) {
 		/** If head is the deleted node. */
-		if (pCurrNode->element == element) {
+		if (pCurrNode->candidate== candidate) {
 			pList->pHead = pCurrNode->pNext;
 			safeFree(pCurrNode, sizeof(struct bigNode_t));
 			pList->size -= 1;
@@ -119,7 +122,7 @@ int deleteBigNode(bigList_t *pList, int element)
 
 	while (pCurrNode != NULL) 
 	{
-		if (pCurrNode->element == element) 
+		if (pCurrNode->candidate== candidate) 
 		{
 			pPrevNode->pNext = pCurrNode->pNext;
 			safeFree(pCurrNode, sizeof(struct bigNode_t));
@@ -128,37 +131,37 @@ int deleteBigNode(bigList_t *pList, int element)
 		pPrevNode = pCurrNode;
 		pCurrNode = pCurrNode->pNext;
 	}
-	/* Can't find element. */
+	/* Can't find candidate. */
 	return FAILED;
 } /* end of deleteNode() */	
 
-int findElement(linkedList_t *pList, int element)
+int findcandidate(linkedList_t *pList, int candidate)
 {
 	llNode_t *pCurrNode = pList->pHead;
 
 	while (pCurrNode != NULL) {
-		if (pCurrNode->element == element) {
+		if (pCurrNode->candidate== candidate) {
 			return FOUND;
 		}
 		pCurrNode = pCurrNode->pNext;
 	}
 
-	/** Can't find element. */
+	/** Can't find candidate. */
 	return NOT_FOUND;
 } /** end of findNode() */
 
-int findBigElement(bigList_t *pList, int element)
+int findBigcandidate(bigList_t *pList, int candidate)
 {
 	struct bigNode_t *pCurrNode = pList->pHead;
 
 	while (pCurrNode != NULL) {
-		if (pCurrNode->element == element) {
+		if (pCurrNode->candidate== candidate) {
 			return FOUND;
 		}
 		pCurrNode = pCurrNode->pNext;
 	}
 
-	/** Can't find element. */
+	/** Can't find candidate. */
 	return NOT_FOUND;
 }
 
@@ -168,7 +171,7 @@ void printList(linkedList_t *pList)
 	llNode_t *pCurrNode = pList->pHead;
 
 	while (pCurrNode != NULL) {
-		printf("%d ", pCurrNode->element);
+		printf("%d ", pCurrNode->candidate);
 		pCurrNode = pCurrNode->pNext;
 	}
 	printf("\n");

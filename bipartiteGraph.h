@@ -5,8 +5,8 @@
  *      Author: jkct440
  */
 
-#ifndef BIPARTITEGRAPH_H_
-#define BIPARTITEGRAPH_H_
+#ifndef BIpartiteGRAPH_H_
+#define BIpartiteGRAPH_H_
 
 
 /* Forward declaration.  Actual definition is up to each individual data structure implementation. */
@@ -30,8 +30,13 @@ typedef struct implBipartGraph_t bpGraph_t;
  *
  * returns - pointer to newly created graph (or NULL if operation failed).
  */
+
+
 extern
-bpGraph_t* bipartGraphCreate(int vertNumPart1, int vertNumPart2);
+void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex);
+
+extern
+bpGraph_t* bipartGraphCreate(int num_males, int num_females);
 
 
 /*
@@ -58,17 +63,17 @@ int bipartGraphInsertVertex(bpGraph_t *pGraph, int vertId, int partite);
 
 
 /*
- * Inserts an edge (srcVertId, tarVertId), with 'srcVertId' from partite 'srcPartite' into bipartite graph 'pGraph'.
+ * Inserts an edge (srcVertId, tarVertId), with 'srcVertId' from partite 'srcpartite' into bipartite graph 'pGraph'.
  *
  * pGraph - pointer to bipartite graph.
  * srcVertId - id of source vertex.
  * tarVertId - id of targe vertex.
- * srcPartite - which partite does the source vertex belongs it (this determines the direction of the edge).
+ * srcpartite - which partite does the source vertex belongs it (this determines the direction of the edge).
  *
  * returns - status code whether the edge was successfully inserted or not.
  */
 extern
-int bipartGraphInsertEdge(bpGraph_t *pGraph, int srcVertId, int tarVertId, int srcPartite);
+int bipartGraphInsertEdge(bpGraph_t *pGraph, int srcVertId, int tarVertId, int srcpartite);
 
 
 /*
@@ -85,17 +90,17 @@ int bipartGraphDeleteVertex(bpGraph_t *pGraph, int vertId, int partite);
 
 
 /*
- * Removes an edge (srcVertId, tarVertId), with 'srcVertId' from partite 'srcPartite' from bipartite graph 'pGraph'.
+ * Removes an edge (srcVertId, tarVertId), with 'srcVertId' from partite 'srcpartite' from bipartite graph 'pGraph'.
  *
  * pGraph - pointer to bipartite graph.
  * srcVertId - id of source vertex.
  * tarVertId - id of targe vertex.
- * srcPartite - which partite does the source vertex belongs it (this determines the direction of the edge).
+ * srcpartite - which partite does the source vertex belongs it (this determines the direction of the edge).
  *
  * returns - status code whether the edge was successfully removed or not.
  */
 extern
-int bipartGraphDeleteEdge(bpGraph_t *pGraph, int srcVertId, int tarVertId, int srcPartite);
+int bipartGraphDeleteEdge(bpGraph_t *pGraph, int srcVertId, int tarVertId, int srcpartite);
 
 
 /*
@@ -112,17 +117,17 @@ int bipartGraphFindVertex(bpGraph_t *pGraph, int vertId, int partite);
 
 
 /*
- * Searches for an edge (srcVertId, tarVertId), with 'srcVertId' from partite 'srcPartite' from bipartite graph 'pGraph'.
+ * Searches for an edge (srcVertId, tarVertId), with 'srcVertId' from partite 'srcpartite' from bipartite graph 'pGraph'.
  *
  * pGraph - pointer to bipartite graph.
  * srcVertId - id of source vertex.
  * tarVertId - id of targe vertex.
- * srcPartite - which partite does the source vertex belongs it (this determines the direction of the edge).
+ * srcpartite - which partite does the source vertex belongs it (this determines the direction of the edge).
  *
  * returns - status code whether the edge was successfully found or not.
  */
 extern
-int bipartGraphFindEdge(bpGraph_t *pGraph, int srcVertId, int tarVertId, int srcPartite);
+int bipartGraphFindEdge(bpGraph_t *pGraph, int srcVertId, int tarVertId, int srcpartite);
 
 
 /*
@@ -137,4 +142,4 @@ void bipartGraphPrint(bpGraph_t *pGraph);
 
 
 
-#endif /* BIPARTITEGRAPH_H_ */
+#endif /* BIpartiteGRAPH_H_ */

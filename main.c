@@ -3,16 +3,16 @@
 #include <unistd.h>
 #include <assert.h>
 #include <string.h>
+
 #include "bipartiteGraph.h"
-/* #include "bipartiteGraph.h"
- #include "commonDefs.h"
-*/
+#include "commonDefs.h"
 int main(int argc, char *argv[])
 {
     FILE* fp;
     char const* const fName = argv[1];
     fp = fopen(fName,"r");
     int males,females;
+    bpGraph_t *pGraph = NULL;    
 
     /* Arg error handling */
     if(argc != 2)
@@ -34,48 +34,48 @@ int main(int argc, char *argv[])
 	/* Count used to get # males and females from  the
 	   first line of file 
 	 */
-	char count = 0;
+	int count = 0, sex = MALE;
     while (fgets(line, sizeof(line), fp))
     {
-    	if(count != 0)
+        char * ptr;
+        if(count == 0)
+        {
+            /* get number of males and females */
+            token = strtok(line, delim);
+            males = strtol(token,&ptr,10);
+            token = strtok(NULL, delim);    
+            females = strtol(token,&ptr,10);        
+            pGraph = bipartGraphCreate(males, females);
+            /* ERROR HANDLE
+                if males != females 
+                < do something >
+                */
+        }    
+    	if(count > 0)
     	{
+            int user,preference;            
 	    	/* get id */
 	   		token = strtok(line, delim);
-	   		printf("Id: %s\n", token);
-	   		token = strtok(NULL, delim);
+            user = strtol(token,&ptr,10);
+            token = strtok(NULL, delim);
 
 	   		while(token)
 	   		{
 	   			/* user preferences */
-	      		printf( "Preference: %s\n", token);
+                preference = strtol(token,&ptr,10);
+                add_preferences_to_user(pGraph,user,preference,sex);
 		        token = strtok(NULL, delim);
    			}
-    	}
-    	else
-    	{
-    		/* get number of males and females */
-    		char * ptr;
-			token = strtok(line, delim);
-			males = strtol(token,&ptr,10);
-	   		printf("# of males: %d\n", males);
-	   		token = strtok(NULL, delim);    
-	   		females = strtol(token,&ptr,10);		
-	   		printf("# of females: %d\n", females);
-    		count+=1;
-
-    		/* ERROR HANDLE
-    			if males != females 
-    			< do something >
-    			*/
-    	}
-
-        // printf("%s", line); 
+        }
+        /* sex doesn't matter for male == female */
+        count++;
+        if (count > males)
+        {
+            sex = FEMALE;
+        }
     }
-
-
-
     printf("File opened successfully through fopen()\n");
-
+    bipartGraphPrint(pGraph);
 
     fclose(fp);
 
