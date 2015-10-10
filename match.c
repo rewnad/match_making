@@ -4,15 +4,12 @@
  *  Created on: 01/07/2015
  *      Author: Jeffrey Chan
  */
-
-
 #include <stddef.h>
 #include <stdio.h>
 #include "bipartiteGraph.h"
 #include "linkedList.h"
 #include "memoryUtil.h"
 #include "commonDefs.h"
-
 
 /* select partite */
 bigList_t * choose_sex(bpGraph_t* pList, int sex);
@@ -28,6 +25,22 @@ struct implBipartGraph_t
 	bigList_t * females;
 };
 
+struct bigNode_t * find_user(bpGraph_t* pGraph, int candidate, int sex)
+{
+	bigList_t * group = choose_sex(pGraph,sex);
+	struct bigNode_t * current;
+
+	current = group->pHead;
+	while(current)
+	{
+		if(current->candidate == candidate)
+		{
+			return current;
+		}
+		current = current->pNext;
+	}
+	return NULL;
+}
 
 void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 {
@@ -44,6 +57,100 @@ void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 	}
 
 	return;
+}
+
+
+int check_preference_priority(bpGraph_t* pGraph, int current_female, struct bigNode_t * current_male)
+{
+	llNode_t * current_male_preference = current_male->preferences->pHead;
+	while(current_male_preference)
+	{
+		/* return fail if top preference is taken */
+
+		if(current_male_preference->candidate == current_female)
+		{
+			return MATCH;
+		}
+		/* point to the start of the preference LL if pointer points to current preference */
+		if(current_male_preference->candidate == current_male->preferences->current_preference)
+		{
+			return NO_MATCH;
+		}
+		current_male_preference = current_male_preference->pNext;
+	}
+
+	return NO_MATCH;
+}
+
+void update_status(bpGraph_t* pGraph, int current_user, int status, int sex)
+{
+	bigNode_t * user = find_user(pGraph, current_user,sex);
+	if(status == FREE)
+	{
+		user->status = FREE;
+		user->preferences->current_preference = 0;
+	}
+}
+int find_stable_matching(bpGraph_t* pGraph) 
+{
+	struct bigNode_t * current_male, *current_female, * female_preference;
+	llNode_t * male_pref, *fem_pref;
+	/*set to true when all male status is set to TAKEN */
+	int flag = false;
+
+	// current_male = pGraph->males->pHead;
+	current_female = pGraph->females->pHead;
+
+	while(!flag)
+	{
+		while(current_female)
+		{
+			female_preference = current_female->preferences->pHead;
+			for(int i = 0; i < pGraph->num_males; i++)
+			{
+				/* check if female is FREE */
+				/* if not free, check female current preference + 1 using priority */
+				/* if current_preference != priority preference + 1 */
+				/* check priority preference + 2 until priority_preference */
+				current_male = find_user(pGraph,female_preference->candidate,MALE);
+				if(!current_male)
+				{
+					return NOT_FOUND;
+				}
+				else 
+				{
+					if(current_male->status == FREE)
+					{
+						current_female->preferences->current_preference = current_male->candidate;
+						current_male->preferences->current_preference = current_female->candidate;
+						current_female->status = TAKEN;
+						current_male->status = TAKEN;
+					}
+					else if(current_male->status == TAKEN)
+					{
+						/* TODO: taken algorithm */
+						if(check_preference_priority(pGraph, current_female->candidate, current_male)
+						{
+							current_male->preferences->current_preference = current_female->candidate;
+							current_female->preferences->current_preference = current_male->candidate;
+                            update_status(pGraph,current_male->preferences->current_preferences, FREE, MALE);
+                        }
+    				}
+    			}
+    		}
+    	}
+    }
+							/*
+						}
+					}
+				}
+				female_preference = female_preference->pNext;
+			}
+			current_female = current_female->pNext;
+		}
+
+	
+	return NOT_STABLE;
 }
 /* ************************************************************************* */
 /* Function implementations */
@@ -93,129 +200,6 @@ void bipartGraphDestroy(bpGraph_t* pGraph)
 } /* end of bipartGraphDestroy() */
 
 
-int bipartGraphInsertVertex(bpGraph_t* pGraph, int vertId, int partite )
-{
-	bigList_t * current = choose_sex(pGraph, partite);
-	if(bipartGraphFindVertex(pGraph, vertId, partite))	
-	{	
-		return EXISTING_VERTEX;
-	}
-	else
-	{
-		addBigNode(current, vertId);
-		return NEW_VERTEX;
-	}
-	return FAILED;
-} /* end of bipartGraphInsertVertex() */
-
-
-int bipartGraphInsertEdge(bpGraph_t* pGraph, int srcVertId, int tarVertId, int srcpartite)
-{
-	bigList_t * bigList = choose_sex(pGraph, srcpartite);
-	struct bigNode_t * bigNode = bigList->pHead;
-
-	if(bipartGraphFindEdge(pGraph, srcVertId, tarVertId, srcpartite))
-	{
-		return EXISTING_EDGE;
-	}
-	else if(bipartGraphFindVertex(pGraph, tarVertId, srcpartite))
-	{
-
-	}
-	else
-	{
-		while(bigNode)
-		{
-			if(bigNode->candidate== srcVertId)
-			{
-				addNode(bigNode->preferences, tarVertId);
-				return NEW_EDGE;
-			}
-			bigNode = bigNode->pNext;
-		}
-	}
-	return ERROR_VALUE;
-} /* end of bipartGraphInsertEdge() */
-
-
-int bipartGraphDeleteVertex(bpGraph_t* graph, int vertId, int partite)
-{
-	bigList_t * bigList = choose_sex(graph,partite);
-	if(!bipartGraphFindVertex(graph, vertId, partite))
-	{
-		return FAILED;
-	}
-	else
-	{
-		deleteBigNode(bigList, vertId);
-		return SUCCESS;
-	}
-
-	return ERROR_VALUE;
-} /* end of bipartGraphDeleteVertex() */
-
-
-int bipartGraphDeleteEdge(bpGraph_t* pGraph,  int srcVertId, int tarVertId, int srcpartite)
-{
-	bigList_t * bigList = choose_sex(pGraph, srcpartite);
-	struct bigNode_t * bigNode = bigList->pHead;
-	if(!bipartGraphFindEdge( pGraph, srcVertId, tarVertId, srcpartite))
-	{
-		return FAILED;
-	}
-	else
-	{
-		while(bigNode)
-		{
-			if(bigNode->candidate== srcVertId)
-			{
-				deleteNode(bigNode->preferences, tarVertId);
-				return SUCCESS;
-			}
-			bigNode = bigNode->pNext;
-		}	
-	}
-	return ERROR_VALUE;
-} /** end of bipartGraphDeleteEdge() */
-
-
-int bipartGraphFindVertex(bpGraph_t *pGraph, int vertId, int partite)
-{
-	bigList_t * current = choose_sex(pGraph,partite);
-	if(findBigcandidate(current, vertId))
-	{
-		return FOUND;
-	}
-	else
-	{
-		return NOT_FOUND;
-	}
-	return NOT_FOUND;
-} /* end of bipartGraphFindVertex() */
-
-
-int bipartGraphFindEdge(bpGraph_t* graph, int srcVertId, int tarVertId, int srcpartite)
-{
-	bigList_t * bigList = choose_sex(graph, srcpartite);
-	struct bigNode_t * bigNode = bigList->pHead;
-	while(bigNode)
-	{
-		if(bigNode->candidate== srcVertId)
-		{
-			if(findcandidate(bigNode->preferences, tarVertId))
-			{
-				return FOUND;
-			}
-			else
-			{
-				return NOT_FOUND;
-			}
-		}
-		bigNode = bigNode->pNext;
-	}
-	
-	return NOT_FOUND;
-} /* end of bipartGraphFindEdge() */
 
 
 void bipartGraphPrint(bpGraph_t *pGraph)

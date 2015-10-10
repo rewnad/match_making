@@ -31,7 +31,7 @@ typedef struct
 	/* pointer to head of list. */
 	llNode_t *pHead;
 	/* count of number of candidates in list */
-	int size;
+	int size, current_preference;
 } linkedList_t;
 
 typedef struct bigList_t bigNode_t;
@@ -108,9 +108,9 @@ int deleteBigNode(bigList_t *pList, int candidate);
  * candidate- the candidateyou want to search for in the list.
  */
 extern
-int findcandidate(linkedList_t *pList, int candidate);
+int findElement(linkedList_t *pList, int candidate);
 extern
-int findBigcandidate(bigList_t *pList, int candidate);
+int findBigElement(bigList_t *pList, int candidate);
 
 /*
  * Print the candidates in the list to stdout.

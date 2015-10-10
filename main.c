@@ -75,7 +75,16 @@ int main(int argc, char *argv[])
         }
     }
     printf("File opened successfully through fopen()\n");
-    bipartGraphPrint(pGraph);
+
+    /* if returns stable */
+    if (find_stable_matching(pGraph))
+    {
+        printf("matching was stable\n");
+    }
+    else
+    {
+        printf("not stable or was not matched");
+    }
 
     fclose(fp);
 

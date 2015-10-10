@@ -16,6 +16,7 @@ linkedList_t* createList()
 {
 	linkedList_t *pNewList = (linkedList_t*) safeMalloc(sizeof(linkedList_t));
 	pNewList->size = 0;
+	pNewList->current_preference = 0;
 	pNewList->pHead = NULL;
 
 
@@ -135,7 +136,7 @@ int deleteBigNode(bigList_t *pList, int candidate)
 	return FAILED;
 } /* end of deleteNode() */	
 
-int findcandidate(linkedList_t *pList, int candidate)
+int findElement(linkedList_t *pList, int candidate)
 {
 	llNode_t *pCurrNode = pList->pHead;
 
@@ -150,7 +151,7 @@ int findcandidate(linkedList_t *pList, int candidate)
 	return NOT_FOUND;
 } /** end of findNode() */
 
-int findBigcandidate(bigList_t *pList, int candidate)
+int findBigElement(bigList_t *pList, int candidate)
 {
 	struct bigNode_t *pCurrNode = pList->pHead;
 
