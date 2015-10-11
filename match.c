@@ -62,21 +62,35 @@ void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 }
 
 
-int check_preference_priority(bpGraph_t* pGraph, int current_female, struct bigNode_t * current_male)
+int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_female, struct bigNode_t * current_male)
 {
-	llNode_t * current_male_preference = current_male->preferences->pHead;
+	llNode_t * current_male_preference, *current_female_preference;
+	int female_priority;
+	current_male_preference = current_male->preferences->pHead;
+	current_female_preference = current_female->preferences->pHead;
+
+	/*get female preference priority */
+	while(current_male_preference)
+	{
+		if(current_male_preference->candidate == current_female->candidate)
+		{
+			female_priority = current_male_preference->priority;
+		}
+		current_male_preference = current_male_preference->pNext;
+	}
+
 	while(current_male_preference)
 	{
 		/* return fail if top preference is taken */
 
-		if(current_male_preference->candidate == current_female)
-		{
-			return MATCH;
-		}
-		/* point to the start of the preference LL if pointer points to current preference */
-		if(current_male_preference->candidate == current_male->preferences->current_preference)
+		if(current_male_preference->priority > female_priority)
 		{
 			return NO_MATCH;
+		}
+		/* point to the start of the preference LL if pointer points to current preference */
+		else if(current_male_preference->priority < female_priority)
+		{
+			return MATCH;
 		}
 		current_male_preference = current_male_preference->pNext;
 	}
@@ -90,30 +104,40 @@ void update_status(bpGraph_t* pGraph, int current_user, int status, int sex)
 	if(status == FREE)
 	{
 		user->status = FREE;
-		user->preferences->current_preference = 0;
 	}
+}
+
+int check_status(bpGraph_t* pGraph)
+{
+	struct bigNode_t * current = pGraph->females->pHead;
+	while(current)
+	{
+		if(current->status == FREE)
+		{
+			return NOT_STABLE;
+		}
+		current = current->pNext;
+	}
+	return STABLE;
 }
 int find_stable_matching(bpGraph_t* pGraph) 
 {
 	struct bigNode_t * current_male, *current_female;
 	llNode_t * female_preference;
 	/*set to true when all male status is set to TAKEN */
-	int flag = false;
+	int flag = false,preference_flag;
 
-	// current_male = pGraph->males->pHead;
-	current_female = pGraph->females->pHead;
 
-	while(!flag)
+	while(!check_status(pGraph))
 	{
+
+		current_female = pGraph->females->pHead;
 		while(current_female)
 		{
 			female_preference = current_female->preferences->pHead;
-			for(int i = 0; i < pGraph->num_males; i++)
+			preference_flag = false;
+			while(!preference_flag)
 			{
-				/* check if female is FREE */
-				/* if not free, check female current preference + 1 using priority */
-				/* if current_preference != priority preference + 1 */
-				/* check priority preference + 2 until priority_preference */
 				current_male = find_user(pGraph,female_preference->candidate,MALE);
 				if(!current_male)
 				{
@@ -127,20 +151,26 @@ int find_stable_matching(bpGraph_t* pGraph)
 						current_male->preferences->current_preference = current_female->candidate;
 						current_female->status = TAKEN;
 						current_male->status = TAKEN;
+						preference_flag = true;
 					}
 					else if(current_male->status == TAKEN)
 					{
 						/* TODO: taken algorithm */
-						if(check_preference_priority(pGraph, current_female->candidate, current_male))
+						if(check_preference_priority(pGraph, current_female, current_male))
 						{
+	                        update_status(pGraph,current_male->preferences->current_preference, FREE, MALE);
 							current_male->preferences->current_preference = current_female->candidate;
 							current_female->preferences->current_preference = current_male->candidate;
-                            update_status(pGraph,current_male->preferences->current_preference, FREE, MALE);
-                        }
-    				}
-    			}
-    		}
+							preference_flag = true;
+	                    }
+					}
+				}
+				female_preference = female_preference->pNext;
+			}
+    		current_female = current_female->pNext;
     	}
+    	/*check_status*/
+    	/*if all statuses == TAKEN, flag = true*/
     }
     return 0;
 }

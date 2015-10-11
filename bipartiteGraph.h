@@ -42,7 +42,7 @@ extern
 struct bigNode_t * find_user(bpGraph_t* pGraph, int candidate, int sex);
 
 extern
-int check_preference_priority(bpGraph_t* pGraph, int current_female, struct bigNode_t * current_male);
+int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_female, struct bigNode_t * current_male);
 
 extern 
 void update_status(bpGraph_t* pGraph, int current_user, int status, int sex);
@@ -50,6 +50,8 @@ void update_status(bpGraph_t* pGraph, int current_user, int status, int sex);
 extern
 bpGraph_t* bipartGraphCreate(int num_males, int num_females);
 
+extern 
+int check_status(bpGraph_t* pGraph);
 
 /*
  * Destroys bipartite graph 'pGraph'.
