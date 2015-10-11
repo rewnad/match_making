@@ -6,6 +6,9 @@
 
 #include "bipartiteGraph.h"
 #include "commonDefs.h"
+
+#define MALE 1;
+#define FEMALE 2;
 int main(int argc, char *argv[])
 {
     FILE* fp;

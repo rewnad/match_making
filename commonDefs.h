@@ -18,9 +18,6 @@
 #define EXISTING_EDGE 0;
 #define NEW_EDGE 1;
 
-#define MALE 1;
-#define FEMALE 2;
-
 #define STABLE 1;
 #define NOT_STABLE 0;
 

@@ -11,6 +11,8 @@
 #include "memoryUtil.h"
 #include "commonDefs.h"
 
+#define MALE 1
+#define FEMALE 2
 /* select partite */
 bigList_t * choose_sex(bpGraph_t* pList, int sex);
 struct implBipartGraph_t
@@ -84,7 +86,7 @@ int check_preference_priority(bpGraph_t* pGraph, int current_female, struct bigN
 
 void update_status(bpGraph_t* pGraph, int current_user, int status, int sex)
 {
-	bigNode_t * user = find_user(pGraph, current_user,sex);
+	struct bigNode_t * user = find_user(pGraph, current_user,sex);
 	if(status == FREE)
 	{
 		user->status = FREE;
@@ -93,8 +95,8 @@ void update_status(bpGraph_t* pGraph, int current_user, int status, int sex)
 }
 int find_stable_matching(bpGraph_t* pGraph) 
 {
-	struct bigNode_t * current_male, *current_female, * female_preference;
-	llNode_t * male_pref, *fem_pref;
+	struct bigNode_t * current_male, *current_female;
+	llNode_t * female_preference;
 	/*set to true when all male status is set to TAKEN */
 	int flag = false;
 
@@ -129,32 +131,22 @@ int find_stable_matching(bpGraph_t* pGraph)
 					else if(current_male->status == TAKEN)
 					{
 						/* TODO: taken algorithm */
-						if(check_preference_priority(pGraph, current_female->candidate, current_male)
+						if(check_preference_priority(pGraph, current_female->candidate, current_male))
 						{
 							current_male->preferences->current_preference = current_female->candidate;
 							current_female->preferences->current_preference = current_male->candidate;
-                            update_status(pGraph,current_male->preferences->current_preferences, FREE, MALE);
+                            update_status(pGraph,current_male->preferences->current_preference, FREE, MALE);
                         }
     				}
     			}
     		}
     	}
     }
-							/*
-						}
-					}
-				}
-				female_preference = female_preference->pNext;
-			}
-			current_female = current_female->pNext;
-		}
-
-	
-	return NOT_STABLE;
+    return 0;
 }
+
 /* ************************************************************************* */
 /* Function implementations */
-
 bigList_t * choose_sex(bpGraph_t* pList, int sex)
 {
 	if(sex == 1)
@@ -192,7 +184,6 @@ bpGraph_t* bipartGraphCreate(int num_males, int num_females)
 	return pGraph;
 	
 } /* end of bipartGraphDestroy() */
-
 
 void bipartGraphDestroy(bpGraph_t* pGraph)
 {
