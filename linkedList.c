@@ -52,24 +52,53 @@ void destroyList(linkedList_t *pList)
 
 void addNode(linkedList_t *pList, int candidate)
 {
-	llNode_t *pNewNode = (llNode_t*) safeMalloc(sizeof(llNode_t));
+
+	llNode_t * current, *pNewNode = (llNode_t*) safeMalloc(sizeof(llNode_t));
 	pNewNode->candidate = candidate;
-	pNewNode->priority = pList->size;
-	/* if null, then first node.  If not null, then pNewNode becomes new head. */
-	pNewNode->pNext = pList->pHead;
-	pList->pHead = pNewNode;
+	pNewNode->priority = pList->size;		
+	pNewNode->pNext = NULL;
+
+	current = pList->pHead;
+	if(!current)
+	{
+		pList->pHead = pNewNode;
+	}
+	else
+	{
+		while(current->pNext)
+		{
+			current = current->pNext;
+		}
+		current->pNext = pNewNode;			
+	}
+
 	pList->size += 1;
 } /** end of addNode() */
 
 void addBigNode(bigList_t *pList, int candidate)
 {
-	struct bigNode_t *pNewNode = (struct bigNode_t*) safeMalloc(sizeof(struct bigNode_t));
+	struct bigNode_t * current, *pNewNode = (struct bigNode_t*) safeMalloc(sizeof(struct bigNode_t));
 	pNewNode->candidate= candidate;
 	pNewNode->status = FREE;
-	/* if null, then first node.  If not null, then pNewNode becomes new head. */
+	pNewNode->pNext = NULL;
 	pNewNode->preferences = createList();
-	pNewNode->pNext = pList->pHead;
-	pList->pHead = pNewNode;
+	// pNewNode->pNext = pList->pHead;
+	// pList->pHead = pNewNode;
+
+	current = pList->pHead;
+	if(!current)
+	{
+		pList->pHead = pNewNode;
+	}
+	else
+	{
+		while(current->pNext)
+		{
+			current = current->pNext;
+		}
+		current->pNext = pNewNode;			
+	}
+
 	pList->size += 1;
 }
 
