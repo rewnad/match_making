@@ -122,7 +122,7 @@ int check_status(bpGraph_t* pGraph)
 }
 
 /* Adapted implementation of Gale Shapely Algorithm */
-int find_stable_matching(bpGraph_t* pGraph, int max_comparisons) 
+void find_stable_matching(bpGraph_t* pGraph, int max_comparisons) 
 {
 	struct bigNode_t * current_male, *current_female;
 	llNode_t * female_preference;
@@ -135,56 +135,56 @@ int find_stable_matching(bpGraph_t* pGraph, int max_comparisons)
 		current_female = pGraph->females->pHead;
 		while(current_female)
 		{
-			if(current_female->status == FREE)
+		// if(current_female->status == FREE)
+		// {
+			female_preference = current_female->preferences->pHead;
+			flag = false;
+			while(!flag)
 			{
-				female_preference = current_female->preferences->pHead;
-				flag = false;
-				while(!flag)
+				current_male = find_user(pGraph,female_preference->candidate,MALE);
+				if(current_male)
 				{
-					current_male = find_user(pGraph,female_preference->candidate,MALE);
-					if(!current_male)
+					if(current_female->status == FREE && current_male->status == FREE)
 					{
-						return NOT_FOUND;
-					}
-					else 
-					{
-						if(current_male->status == FREE)
+						if(find_preference(current_male,current_female->candidate) == 1)
 						{
-							if(find_preference(current_male,current_female->candidate))
-							{
-								current_female->preferences->current_preference = current_male->candidate;
-								current_male->preferences->current_preference = current_female->candidate;
-								current_female->status = TAKEN;
-								current_male->status = TAKEN;
-								flag = true;
-							}
-						}
-						else if(current_male->status == TAKEN)
-						{
-							/* TODO: taken algorithm */
-							if(check_preference_priority(pGraph, current_female, current_male))
-							{
-								struct bigNode_t * user = find_user(pGraph, current_male->preferences->current_preference,FEMALE);
-								user->status = FREE;
-								current_male->preferences->current_preference = current_female->candidate;
-								current_female->preferences->current_preference = current_male->candidate;
-								current_female->status = TAKEN;
-								flag = true;
-		                    }
+							current_female->preferences->current_preference = current_male->candidate;
+							current_male->preferences->current_preference = current_female->candidate;
+							current_female->status = TAKEN;
+							current_male->status = TAKEN;
+							flag = true;
 						}
 					}
-					female_preference = female_preference->pNext;
+					else if(current_male->status == TAKEN)
+					{
+						/* TODO: taken algorithm */
+						if(check_preference_priority(pGraph, current_female, current_male))
+						{
+							struct bigNode_t * user = find_user(pGraph, current_male->preferences->current_preference,FEMALE);
+							user->status = FREE;
+							current_male->preferences->current_preference = current_female->candidate;
+							current_female->preferences->current_preference = current_male->candidate;
+							current_female->status = TAKEN;
+							flag = true;
+	                    }
+					}
+				}
+				female_preference = female_preference->pNext;
+				if(!female_preference)
+				{
+					flag = true;
 				}
 			}
+		// }
     		current_female = current_female->pNext;
     	}
     	/* breaks if max comparisons have been reached */
+    	comparison_count +=1;
     	if(comparison_count == max_comparisons*max_comparisons)
     	{
     		break;
     	}
     }
-    return 1;
 }
 
 /* Select a bigList_t depending on input sex */
@@ -241,8 +241,8 @@ void print_graph(bpGraph_t *pGraph)
 		if(current->status == TAKEN)
 		{
 			printf("%d %d\n", current->candidate, current->preferences->current_preference);
-			current = current->pNext;
 		}
+		current = current->pNext;
 	}
 } 
 

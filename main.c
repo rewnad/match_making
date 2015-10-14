@@ -55,17 +55,17 @@ int main(int argc, char *argv[])
             {
                 /*sex doesn't matter.*/
                 input_sex_length = females-1;
-                pGraph = bipartGraphCreate(males, females);
+                // pGraph = bipartGraphCreate(males, females);
             }
             else if(males > females)
             {
                 input_sex_length = females-1;
-                pGraph = bipartGraphCreate(females, females);
+                // pGraph = bipartGraphCreate(females, females);
             }
             else if(males < females)
             {
                 input_sex_length = males-1;
-                pGraph = bipartGraphCreate(males, males);
+                // pGraph = bipartGraphCreate(males, males);
             }
         }    
     	if(count > 0)
@@ -75,8 +75,8 @@ int main(int argc, char *argv[])
             c[0] = line[0];
             int line_int = atoi(c);
             /* if males != females */
-            if(line_int <= input_sex_length)
-            {
+            // if(line_int <= input_sex_length)
+            // {
                 int user,preference;            
     	    	/* get id */
     	   		token = strtok(line, delim);
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
                     add_preferences_to_user(pGraph,user,preference,sex);
     		        token = strtok(NULL, delim);
        			}
-            }
+            // }
         }
         /* sex doesn't matter for male == female */
         count++;
@@ -99,18 +99,8 @@ int main(int argc, char *argv[])
             sex = FEMALE;
         }
     }
-    printf("File opened successfully through fopen()\n");
-
-    /* if returns stable */
-    if (find_stable_matching(pGraph,input_sex_length+1))
-    {
-        printf("matching was stable\n");
-        print_graph(pGraph);
-    }
-    else
-    {
-        printf("not stable\n");
-    }
+    find_stable_matching(pGraph,input_sex_length+1);
+    print_graph(pGraph);
 
     fclose(fp);
 

@@ -36,7 +36,7 @@ extern
 void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex);
 
 extern
-int find_stable_matching(bpGraph_t* pGraph, int max_comparisons);
+void find_stable_matching(bpGraph_t* pGraph, int max_comparisons);
 
 extern
 struct bigNode_t * find_user(bpGraph_t* pGraph, int candidate, int sex);
