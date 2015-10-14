@@ -61,7 +61,6 @@ void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 	return;
 }
 
-
 int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_female, struct bigNode_t * current_male)
 {
 	llNode_t * current_male_preference, *current_female_preference;
@@ -99,15 +98,6 @@ int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_fema
 	return NO_MATCH;
 }
 
-void update_status(bpGraph_t* pGraph, int current_user, int status, int sex)
-{
-	struct bigNode_t * user = find_user(pGraph, current_user,sex);
-	if(status == FREE)
-	{
-		user->status = FREE;
-	}
-}
-
 int check_status(bpGraph_t* pGraph)
 {
 	struct bigNode_t * current = pGraph->females->pHead;
@@ -135,38 +125,43 @@ int find_stable_matching(bpGraph_t* pGraph)
 		current_female = pGraph->females->pHead;
 		while(current_female)
 		{
-			female_preference = current_female->preferences->pHead;
-			preference_flag = false;
-			while(!preference_flag)
+			if(current_female->status == FREE)
 			{
-				current_male = find_user(pGraph,female_preference->candidate,MALE);
-				if(!current_male)
+				female_preference = current_female->preferences->pHead;
+				preference_flag = false;
+				while(!preference_flag)
 				{
-					return NOT_FOUND;
-				}
-				else 
-				{
-					if(current_male->status == FREE)
+					current_male = find_user(pGraph,female_preference->candidate,MALE);
+					if(!current_male)
 					{
-						current_female->preferences->current_preference = current_male->candidate;
-						current_male->preferences->current_preference = current_female->candidate;
-						current_female->status = TAKEN;
-						current_male->status = TAKEN;
-						preference_flag = true;
+						return NOT_FOUND;
 					}
-					else if(current_male->status == TAKEN)
+					else 
 					{
-						/* TODO: taken algorithm */
-						if(check_preference_priority(pGraph, current_female, current_male))
+						if(current_male->status == FREE)
 						{
-	                        update_status(pGraph,current_male->preferences->current_preference, FREE, MALE);
-							current_male->preferences->current_preference = current_female->candidate;
 							current_female->preferences->current_preference = current_male->candidate;
+							current_male->preferences->current_preference = current_female->candidate;
+							current_female->status = TAKEN;
+							current_male->status = TAKEN;
 							preference_flag = true;
-	                    }
+						}
+						else if(current_male->status == TAKEN)
+						{
+							/* TODO: taken algorithm */
+							if(check_preference_priority(pGraph, current_female, current_male))
+							{
+								struct bigNode_t * user = find_user(pGraph, current_male->preferences->current_preference,FEMALE);
+								user->status = FREE;
+								current_male->preferences->current_preference = current_female->candidate;
+								current_female->preferences->current_preference = current_male->candidate;
+								current_female->status = TAKEN;
+								preference_flag = true;
+		                    }
+						}
 					}
+					female_preference = female_preference->pNext;
 				}
-				female_preference = female_preference->pNext;
 			}
     		current_female = current_female->pNext;
     	}
@@ -232,5 +227,5 @@ void print_graph(bpGraph_t *pGraph)
 		printf("female: %d male: %d\n ", current->candidate, current->preferences->current_preference);
 		current = current->pNext;
 	}
-} /* end of bipartGraphPrint() */
+} 
 
