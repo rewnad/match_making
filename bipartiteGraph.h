@@ -69,7 +69,7 @@ void bipartGraphDestroy(bpGraph_t *pGraph);
  * returns - status code whether vertex was successfully printed or not.
  */
 extern
-void bipartGraphPrint(bpGraph_t *pGraph);
+void print_graph(bpGraph_t *pGraph);
 
 
 

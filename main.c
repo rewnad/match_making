@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
     if (find_stable_matching(pGraph))
     {
         printf("matching was stable\n");
+        print_graph(pGraph);
     }
     else
     {

@@ -78,19 +78,20 @@ int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_fema
 		}
 		current_male_preference = current_male_preference->pNext;
 	}
-
+	
+	current_male_preference = current_male->preferences->pHead;
 	while(current_male_preference)
 	{
 		/* return fail if top preference is taken */
 
 		if(current_male_preference->priority > female_priority)
 		{
-			return NO_MATCH;
+			return MATCH;
 		}
 		/* point to the start of the preference LL if pointer points to current preference */
 		else if(current_male_preference->priority < female_priority)
 		{
-			return MATCH;
+			return NO_MATCH;
 		}
 		current_male_preference = current_male_preference->pNext;
 	}
@@ -172,7 +173,7 @@ int find_stable_matching(bpGraph_t* pGraph)
     	/*check_status*/
     	/*if all statuses == TAKEN, flag = true*/
     }
-    return 0;
+    return 1;
 }
 
 /* ************************************************************************* */
@@ -223,53 +224,13 @@ void bipartGraphDestroy(bpGraph_t* pGraph)
 
 
 
-void bipartGraphPrint(bpGraph_t *pGraph)
+void print_graph(bpGraph_t *pGraph)
 {
-	printf("Vertices\n");
-	printf("Part 1\n");
-	struct bigNode_t * bigNode = pGraph->males->pHead;
-	while(bigNode)
+	struct bigNode_t * current = pGraph->females->pHead;
+	while(current)
 	{	
-		printf("%d ", bigNode->candidate);
-		bigNode = bigNode->pNext;
-	}
-
-	printf("\n");
-
-	printf("Vertices\n");
-	printf("Part 2\n");
-	bigNode = pGraph->females->pHead;
-	while(bigNode)
-	{	
-		printf("%d ", bigNode->candidate);
-		bigNode = bigNode->pNext;
-	}
-	printf("\n");
-	printf("preferences 1 to 2\n");
-	bigNode = pGraph->males->pHead;
-	while(bigNode)
-	{	
-		llNode_t *pCurrNode = bigNode->preferences->pHead;
-		while (pCurrNode) 
-		{
-
-			printf("%d %d\n",bigNode->candidate, pCurrNode->candidate);
-			pCurrNode = pCurrNode->pNext;
-		}
-		bigNode = bigNode->pNext;
-	}
-	printf("preferences 2 to 1\n");
-	bigNode = pGraph->females->pHead;
-	while(bigNode)
-	{	
-		llNode_t *pCurrNode = bigNode->preferences->pHead;
-		while (pCurrNode) 
-		{
-
-			printf("%d %d\n",bigNode->candidate, pCurrNode->candidate);
-			pCurrNode = pCurrNode->pNext;
-		}
-		bigNode = bigNode->pNext;
+		printf("female: %d male: %d\n ", current->candidate, current->preferences->current_preference);
+		current = current->pNext;
 	}
 } /* end of bipartGraphPrint() */
 
