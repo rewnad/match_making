@@ -36,6 +36,19 @@ struct bigNode_t * find_user(bpGraph_t* pGraph, int candidate, int sex)
 	return NULL;
 }
 
+int find_preference(struct bigNode_t * current_user, int preference)
+{
+	llNode_t * current = current_user->preferences->pHead;
+	while(current)
+	{
+		if(current->candidate == preference)
+		{
+			return FOUND;
+		}
+		current = current->pNext;
+	}
+	return NOT_FOUND;
+}
 /* Initialise user preferences */
 void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 {
@@ -109,12 +122,13 @@ int check_status(bpGraph_t* pGraph)
 }
 
 /* Adapted implementation of Gale Shapely Algorithm */
-int find_stable_matching(bpGraph_t* pGraph) 
+int find_stable_matching(bpGraph_t* pGraph, int max_comparisons) 
 {
 	struct bigNode_t * current_male, *current_female;
 	llNode_t * female_preference;
 	/*set to true when all male status is set to TAKEN */
 	int flag = false;
+	int comparison_count=0;
 
 	while(!check_status(pGraph))
 	{
@@ -136,11 +150,14 @@ int find_stable_matching(bpGraph_t* pGraph)
 					{
 						if(current_male->status == FREE)
 						{
-							current_female->preferences->current_preference = current_male->candidate;
-							current_male->preferences->current_preference = current_female->candidate;
-							current_female->status = TAKEN;
-							current_male->status = TAKEN;
-							flag = true;
+							if(find_preference(current_male,current_female->candidate))
+							{
+								current_female->preferences->current_preference = current_male->candidate;
+								current_male->preferences->current_preference = current_female->candidate;
+								current_female->status = TAKEN;
+								current_male->status = TAKEN;
+								flag = true;
+							}
 						}
 						else if(current_male->status == TAKEN)
 						{
@@ -160,6 +177,11 @@ int find_stable_matching(bpGraph_t* pGraph)
 				}
 			}
     		current_female = current_female->pNext;
+    	}
+    	/* breaks if max comparisons have been reached */
+    	if(comparison_count == max_comparisons*max_comparisons)
+    	{
+    		break;
     	}
     }
     return 1;
@@ -213,11 +235,14 @@ void bipartGraphDestroy(bpGraph_t* pGraph)
 /*Print graph */
 void print_graph(bpGraph_t *pGraph)
 {
-	struct bigNode_t * current = pGraph->females->pHead;
+	struct bigNode_t * current = pGraph->males->pHead;
 	while(current)
 	{	
-		printf("%d %d\n", current->candidate, current->preferences->current_preference);
-		current = current->pNext;
+		if(current->status == TAKEN)
+		{
+			printf("%d %d\n", current->candidate, current->preferences->current_preference);
+			current = current->pNext;
+		}
 	}
 } 
 

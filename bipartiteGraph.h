@@ -36,7 +36,7 @@ extern
 void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex);
 
 extern
-int find_stable_matching(bpGraph_t* pGraph);
+int find_stable_matching(bpGraph_t* pGraph, int max_comparisons);
 
 extern
 struct bigNode_t * find_user(bpGraph_t* pGraph, int candidate, int sex);
@@ -50,6 +50,8 @@ bpGraph_t* bipartGraphCreate(int num_males, int num_females);
 extern 
 int check_status(bpGraph_t* pGraph);
 
+extern
+int find_preference(struct bigNode_t * current_user, int preference);
 /*
  * Destroys bipartite graph 'pGraph'.
  *

@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
 	   first line of file 
 	 */
 	int count = 0, sex = MALE;
+    /* array length */
+    int input_sex_length;
     while (fgets(line, sizeof(line), fp))
     {
         char * ptr;
@@ -49,26 +51,46 @@ int main(int argc, char *argv[])
             token = strtok(NULL, delim);    
             females = strtol(token,&ptr,10);        
             pGraph = bipartGraphCreate(males, females);
-            /* ERROR HANDLE
-                if males != females 
-                < do something >
-                */
+            if (males - females == 0)
+            {
+                /*sex doesn't matter.*/
+                input_sex_length = females-1;
+                pGraph = bipartGraphCreate(males, females);
+            }
+            else if(males > females)
+            {
+                input_sex_length = females-1;
+                pGraph = bipartGraphCreate(females, females);
+            }
+            else if(males < females)
+            {
+                input_sex_length = males-1;
+                pGraph = bipartGraphCreate(males, males);
+            }
         }    
     	if(count > 0)
     	{
-            int user,preference;            
-	    	/* get id */
-	   		token = strtok(line, delim);
-            user = strtol(token,&ptr,10);
-            token = strtok(NULL, delim);
+            char c[2];
+            c[1] = '\0';
+            c[0] = line[0];
+            int line_int = atoi(c);
+            /* if males != females */
+            if(line_int <= input_sex_length)
+            {
+                int user,preference;            
+    	    	/* get id */
+    	   		token = strtok(line, delim);
+                user = strtol(token,&ptr,10);
+                token = strtok(NULL, delim);
 
-	   		while(token)
-	   		{
-	   			/* user preferences */
-                preference = strtol(token,&ptr,10);
-                add_preferences_to_user(pGraph,user,preference,sex);
-		        token = strtok(NULL, delim);
-   			}
+    	   		while(token)
+    	   		{
+    	   			/* user preferences */
+                    preference = strtol(token,&ptr,10);
+                    add_preferences_to_user(pGraph,user,preference,sex);
+    		        token = strtok(NULL, delim);
+       			}
+            }
         }
         /* sex doesn't matter for male == female */
         count++;
@@ -80,7 +102,7 @@ int main(int argc, char *argv[])
     printf("File opened successfully through fopen()\n");
 
     /* if returns stable */
-    if (find_stable_matching(pGraph))
+    if (find_stable_matching(pGraph,input_sex_length+1))
     {
         printf("matching was stable\n");
         print_graph(pGraph);
@@ -91,5 +113,6 @@ int main(int argc, char *argv[])
     }
 
     fclose(fp);
+
     return 0;
 }
