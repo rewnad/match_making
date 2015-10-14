@@ -1,9 +1,3 @@
-/*
- * bpGraphAdjMat_AA.c
- *
- *  Created on: 01/07/2015
- *      Author: Jeffrey Chan
- */
 #include <stddef.h>
 #include <stdio.h>
 #include "bipartiteGraph.h"
@@ -13,20 +7,18 @@
 
 #define MALE 1
 #define FEMALE 2
-/* select partite */
 bigList_t * choose_sex(bpGraph_t* pList, int sex);
+
 struct implBipartGraph_t
 {
-	/** Vertex number of partite 1. */
 	int num_males;
-	/** Vertex number of partite 2. */
 	int num_females;
 
-	/* Dynamically allocated array of linked lists of neighbours for partite 1. */
 	bigList_t * males;
 	bigList_t * females;
 };
 
+/* Find a user given an integer id */
 struct bigNode_t * find_user(bpGraph_t* pGraph, int candidate, int sex)
 {
 	bigList_t * group = choose_sex(pGraph,sex);
@@ -44,6 +36,7 @@ struct bigNode_t * find_user(bpGraph_t* pGraph, int candidate, int sex)
 	return NULL;
 }
 
+/* Initialise user preferences */
 void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 {
 	bigList_t* current = choose_sex(pGraph,sex);
@@ -61,6 +54,7 @@ void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 	return;
 }
 
+/* Check preference priority of a given user */
 int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_female, struct bigNode_t * current_male)
 {
 	llNode_t * current_male_preference, *current_female_preference;
@@ -98,6 +92,8 @@ int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_fema
 	return NO_MATCH;
 }
 
+/* Traverse through list returning  true if all female 
+   status' are TAKEN */
 int check_status(bpGraph_t* pGraph)
 {
 	struct bigNode_t * current = pGraph->females->pHead;
@@ -111,25 +107,25 @@ int check_status(bpGraph_t* pGraph)
 	}
 	return STABLE;
 }
+
+/* Adapted implementation of Gale Shapely Algorithm */
 int find_stable_matching(bpGraph_t* pGraph) 
 {
 	struct bigNode_t * current_male, *current_female;
 	llNode_t * female_preference;
 	/*set to true when all male status is set to TAKEN */
-	int flag = false,preference_flag;
-
+	int flag = false;
 
 	while(!check_status(pGraph))
 	{
-
 		current_female = pGraph->females->pHead;
 		while(current_female)
 		{
 			if(current_female->status == FREE)
 			{
 				female_preference = current_female->preferences->pHead;
-				preference_flag = false;
-				while(!preference_flag)
+				flag = false;
+				while(!flag)
 				{
 					current_male = find_user(pGraph,female_preference->candidate,MALE);
 					if(!current_male)
@@ -144,7 +140,7 @@ int find_stable_matching(bpGraph_t* pGraph)
 							current_male->preferences->current_preference = current_female->candidate;
 							current_female->status = TAKEN;
 							current_male->status = TAKEN;
-							preference_flag = true;
+							flag = true;
 						}
 						else if(current_male->status == TAKEN)
 						{
@@ -156,7 +152,7 @@ int find_stable_matching(bpGraph_t* pGraph)
 								current_male->preferences->current_preference = current_female->candidate;
 								current_female->preferences->current_preference = current_male->candidate;
 								current_female->status = TAKEN;
-								preference_flag = true;
+								flag = true;
 		                    }
 						}
 					}
@@ -165,14 +161,11 @@ int find_stable_matching(bpGraph_t* pGraph)
 			}
     		current_female = current_female->pNext;
     	}
-    	/*check_status*/
-    	/*if all statuses == TAKEN, flag = true*/
     }
     return 1;
 }
 
-/* ************************************************************************* */
-/* Function implementations */
+/* Select a bigList_t depending on input sex */
 bigList_t * choose_sex(bpGraph_t* pList, int sex)
 {
 	if(sex == 1)
@@ -186,7 +179,7 @@ bigList_t * choose_sex(bpGraph_t* pList, int sex)
 	return NULL;
 }
 
-
+/* Initialise graph */
 bpGraph_t* bipartGraphCreate(int num_males, int num_females)
 {
 	/* TODO: Implement me! */
@@ -209,22 +202,21 @@ bpGraph_t* bipartGraphCreate(int num_males, int num_females)
 	}
 	return pGraph;
 	
-} /* end of bipartGraphDestroy() */
+} 
 
+/* Free graph */
 void bipartGraphDestroy(bpGraph_t* pGraph)
 {
 	/* TODO: Implement me! */
 } /* end of bipartGraphDestroy() */
 
-
-
-
+/*Print graph */
 void print_graph(bpGraph_t *pGraph)
 {
 	struct bigNode_t * current = pGraph->females->pHead;
 	while(current)
 	{	
-		printf("female: %d male: %d\n ", current->candidate, current->preferences->current_preference);
+		printf("%d %d\n", current->candidate, current->preferences->current_preference);
 		current = current->pNext;
 	}
 } 

@@ -87,12 +87,9 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("not stable or was not matched");
+        printf("not stable\n");
     }
 
     fclose(fp);
-
-    printf("File stream closed through fclose()\n");
-
     return 0;
 }
