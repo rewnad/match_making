@@ -71,25 +71,33 @@ void add_preferences_to_user(bpGraph_t* pGraph, int user,int preference,int sex)
 int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_female, struct bigNode_t * current_male)
 {
 	llNode_t * current_male_preference, *current_female_preference;
-	int female_priority;
+	int female_priority, found;
 	current_male_preference = current_male->preferences->pHead;
 	current_female_preference = current_female->preferences->pHead;
-
+	/* current_female is returning NULL when accessing candidate.... think ! */
 	/*get female preference priority */
+	found = 0;
 	while(current_male_preference)
 	{
+		/* female HAS to be found otherwise found returns 0 */
 		if(current_male_preference->candidate == current_female->candidate)
 		{
 			female_priority = current_male_preference->priority;
+			found +=1;
 		}
 		current_male_preference = current_male_preference->pNext;
 	}
 	
+
 	current_male_preference = current_male->preferences->pHead;
 	while(current_male_preference)
 	{
 		/* return fail if top preference is taken */
-
+		/*female doesn't exist in male table*/
+		if(!found)
+		{
+			return NO_MATCH;
+		}
 		if(current_male_preference->priority > female_priority)
 		{
 			return MATCH;
@@ -101,7 +109,6 @@ int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_fema
 		}
 		current_male_preference = current_male_preference->pNext;
 	}
-
 	return NO_MATCH;
 }
 
@@ -157,7 +164,7 @@ void find_stable_matching(bpGraph_t* pGraph, int max_comparisons)
 					}
 					else if(current_male->status == TAKEN)
 					{
-						/* TODO: taken algorithm */
+						/* ERROR IS HERE FOR TEST CASE #5*/
 						if(check_preference_priority(pGraph, current_female, current_male))
 						{
 							struct bigNode_t * user = find_user(pGraph, current_male->preferences->current_preference,FEMALE);
