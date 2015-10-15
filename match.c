@@ -112,7 +112,7 @@ int check_preference_priority(bpGraph_t* pGraph, struct bigNode_t * current_fema
 	return NO_MATCH;
 }
 
-/* Traverse through list returning  true if all female 
+/* Traverses through list and returns true if all female 
    status' are TAKEN */
 int check_status(bpGraph_t* pGraph)
 {
